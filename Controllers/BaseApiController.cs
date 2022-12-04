@@ -3,7 +3,7 @@
 namespace Bluedit.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public abstract class BaseApiController : ControllerBase
     {
     }

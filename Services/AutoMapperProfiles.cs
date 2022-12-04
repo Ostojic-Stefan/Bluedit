@@ -12,6 +12,8 @@ namespace Bluedit.Services
             //    .ForMember(dest => dest.PasswordHash, act => act.MapFrom(src => PasswordManager.HashPassword(src.Password)))
             //    .ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<PostCreationDto, Post>().ReverseMap();
+            CreateMap<PostDto, Post>().ReverseMap();
         }
     }
 }
