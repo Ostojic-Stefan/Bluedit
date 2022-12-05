@@ -59,8 +59,13 @@ namespace Bluedit.Controllers
 
             if (PasswordManager.VerifyPassword(userRegisterDto.Password, user.PasswordHash, user.Salt))
             {
+                Response.Cookies.Append("X-Access-Token", tokenService.GenerateToken(user.Username), new CookieOptions
+                {
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
                 var userDto = mapper.Map<UserDto>(user);
-                userDto.Token = tokenService.GenerateToken(user.Username);
                 return Ok(userDto);
             }
             return Unauthorized();
