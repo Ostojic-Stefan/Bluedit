@@ -7,6 +7,6 @@
         public string Body { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
         public User User { get; set; }
-
+        public List<Comment> Comments { get; set; }
     }
 }
