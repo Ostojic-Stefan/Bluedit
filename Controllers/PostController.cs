@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Bluedit.Data;
 using Bluedit.Dtos;
 using Bluedit.Entities;
+using Bluedit.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,19 +26,15 @@ namespace Bluedit.Controllers
         [HttpPost]
         public async Task<ActionResult<PostDto>> CreatePost(PostCreationDto postCreationDto)
         {
-            var ttt = User;
             var username = User.FindFirst(ClaimTypes.Name)?.Value;
 
             var user = await context.Users.FirstOrDefaultAsync(user => user.Username == username);
 
             if (user == null) return Unauthorized();
 
-            var post = new Post
-            {
-                Title = postCreationDto.Title,
-                Body = postCreationDto.Body,
-                User = user
-            };
+            var post = mapper.Map<Post>(postCreationDto);
+
+            post.User = user;
 
             context.Posts.Add(post);
 
@@ -44,5 +42,28 @@ namespace Bluedit.Controllers
 
             return Ok(mapper.Map<PostDto>(post));
         }
+
+        [HttpGet]
+        public async Task<ActionResult<List<PostDto>>> GetPosts()
+        {
+            var posts = await context.Posts
+                .AsNoTracking()
+                .ProjectTo<PostsWithUserDto>(mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            if (posts.Count == 0) return NoContent();
+
+            return Ok(posts);
+        }
+
+        [HttpGet("{identifier}/{slug}")]
+        public async Task<ActionResult<PostDto>> GetPost(string identifier, string slug)
+        {
+            return Ok(await context.Posts
+                .ProjectTo<PostsWithUserDto>(mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(post => post.Identifier == identifier && slug == post.Slug)
+            );
+        }
+
     }
 }
