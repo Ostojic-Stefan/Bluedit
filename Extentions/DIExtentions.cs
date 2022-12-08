@@ -16,6 +16,8 @@ namespace Bluedit.Extentions
                 options.UseNpgsql(config.GetConnectionString("PostgresConnection"));
             });
 
+            service.AddCors();
+
             service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
